@@ -64,12 +64,8 @@
     }
 
     @keyframes driftGrid {
-      0% {
-        background-position: 0 0, 0 0;
-      }
-      100% {
-        background-position: 40px 40px, -40px -40px;
-      }
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 40px 40px, -40px -40px; }
     }
 
     /* Header */
@@ -94,8 +90,9 @@
       border-radius: 0.8rem;
       border: 2px solid var(--bb-border);
       box-shadow: var(--bb-shadow-soft);
-      background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07), transparent),
-                  linear-gradient(135deg, rgba(17, 39, 23, 0.95), rgba(5, 12, 7, 0.98));
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07), transparent),
+        linear-gradient(135deg, rgba(17, 39, 23, 0.95), rgba(5, 12, 7, 0.98));
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -186,7 +183,6 @@
       transition: transform var(--bb-transition-med), box-shadow var(--bb-transition-med),
         border-color var(--bb-transition-med), background 0.4s ease-out;
       cursor: pointer;
-      aspect-ratio: 1 / 1;
       animation: fadeInUp 0.7s ease-out both;
     }
 
@@ -209,13 +205,12 @@
       opacity: 1;
     }
 
-    /* Staggered animation for cards */
+    /* Staggered animation */
     .character-card:nth-child(1) { animation-delay: 0.15s; }
     .character-card:nth-child(2) { animation-delay: 0.25s; }
     .character-card:nth-child(3) { animation-delay: 0.35s; }
     .character-card:nth-child(4) { animation-delay: 0.45s; }
     .character-card:nth-child(5) { animation-delay: 0.55s; }
-    .character-card:nth-child(6) { animation-delay: 0.65s; }
 
     /* Element label strip */
     .character-element {
@@ -228,40 +223,34 @@
       opacity: 0.9;
     }
 
-    .element-number {
-      font-size: 0.75rem;
-    }
-
+    .element-number { font-size: 0.75rem; }
     .element-symbol {
       font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
-
-    .element-weight {
-      font-size: 0.7rem;
-    }
+    .element-weight { font-size: 0.7rem; }
 
     /* Image */
     .character-img-wrapper {
       position: relative;
-      flex: 1 1 auto;
       border-radius: 0.9rem;
       overflow: hidden;
       border: 1px solid rgba(111, 191, 58, 0.35);
     }
 
     .character-img-wrapper img {
+      display: block;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;       /* show full image */
+      object-fit: contain;
       filter: contrast(1.05) saturate(1.1);
-      transition: transform var(--bb-transition-med), filter var(--bb-transition-med), transform 0.3s;
+      transition: transform var(--bb-transition-med), filter var(--bb-transition-med);
     }
 
     .character-card:hover .character-img-wrapper img {
-      transform: scale(1.05);
+      transform: scale(1.03);
       filter: contrast(1.1) saturate(1.2);
     }
 
@@ -299,7 +288,8 @@
       margin-top: 0.25rem;
       align-self: flex-start;
       border: 1px solid var(--bb-green-soft);
-      background: radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.23), transparent 55%),
+      background:
+        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.23), transparent 55%),
         linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
       color: var(--bb-text-main);
       padding: 0.45rem 0.8rem;
@@ -313,6 +303,10 @@
       gap: 0.4rem;
       transition: transform var(--bb-transition-fast), box-shadow var(--bb-transition-fast),
         background 0.25s ease-out, border-color var(--bb-transition-fast), opacity 0.25s;
+    }
+
+    .audio-btn + .audio-btn {
+      margin-left: 0.4rem;
     }
 
     .audio-btn::before {
@@ -331,7 +325,6 @@
       box-shadow: none;
     }
 
-    /* Visual state when audio is playing */
     .audio-btn.playing {
       border-color: var(--bb-danger);
       box-shadow: 0 0 25px rgba(240, 91, 91, 0.45);
@@ -340,6 +333,178 @@
 
     .audio-btn.playing::before {
       content: "⏸";
+    }
+
+    /* Meth quiz section */
+    .meth-section {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(111, 191, 58, 0.3);
+      animation: fadeInUp 0.9s ease-out both;
+      animation-delay: 0.65s;
+    }
+
+    .meth-title {
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--bb-green-soft);
+      margin-bottom: 0.5rem;
+    }
+
+    .meth-subtitle {
+      font-size: 0.9rem;
+      color: var(--bb-text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .meth-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .meth-image-wrapper {
+      flex: 1 1 260px;
+      max-width: 380px;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(111, 191, 58, 0.5);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.2), transparent);
+      position: relative;
+    }
+
+    .meth-image-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      transform-origin: center;
+      transition: transform 0.4s ease-out, filter 0.4s ease-out, opacity 0.4s;
+    }
+
+    .meth-image-wrapper:hover img {
+      transform: scale(1.03);
+      filter: contrast(1.1) saturate(1.15);
+    }
+
+    .meth-quiz {
+      flex: 1 1 260px;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .meth-question {
+      font-size: 0.95rem;
+      color: var(--bb-text-main);
+    }
+
+    .meth-input-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.3rem;
+    }
+
+    .meth-input-row input {
+      flex: 1;
+      padding: 0.5rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(154, 223, 107, 0.7);
+      background: rgba(5, 12, 7, 0.9);
+      color: var(--bb-text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out, background 0.2s ease-out;
+    }
+
+    .meth-input-row input:focus {
+      border-color: var(--bb-green-soft);
+      box-shadow: 0 0 14px rgba(154, 223, 107, 0.5);
+      background: rgba(10, 20, 13, 0.95);
+    }
+
+    .meth-submit-btn {
+      border-radius: 999px;
+      border: 1px solid var(--bb-green-soft);
+      background:
+        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.35), transparent 55%),
+        linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      cursor: pointer;
+      color: var(--bb-text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+    }
+
+    .meth-submit-btn::before {
+      content: "🔬";
+      font-size: 0.85rem;
+    }
+
+    .meth-submit-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: var(--bb-shadow-soft);
+      border-color: var(--bb-green);
+    }
+
+    .meth-submit-btn:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: none;
+    }
+
+    .meth-feedback {
+      min-height: 1.2rem;
+      font-size: 0.85rem;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out, color 0.25s ease-out;
+    }
+
+    .meth-feedback.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .meth-feedback.success {
+      color: var(--bb-green-soft);
+    }
+
+    .meth-feedback.error {
+      color: var(--bb-danger);
+    }
+
+    /* Explosion / wrong answer animations */
+    .meth-image-wrapper.explode img {
+      animation: methExplode 1s ease-out forwards;
+    }
+
+    @keyframes methExplode {
+      0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+      40% { transform: scale(1.15); filter: brightness(1.4); }
+      70% { transform: scale(1.3); filter: brightness(2); }
+      100% { transform: scale(1.6); opacity: 0; filter: blur(4px) brightness(0.2); }
+    }
+
+    .meth-image-wrapper.shake img {
+      animation: methShake 0.5s ease-in-out;
+    }
+
+    @keyframes methShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
     }
 
     /* Footer */
@@ -351,7 +516,7 @@
       color: var(--bb-text-muted);
       font-size: 0.8rem;
       animation: fadeInUp 0.9s ease-out both;
-      animation-delay: 0.4s;
+      animation-delay: 0.8s;
     }
 
     .footer-heart {
@@ -361,82 +526,43 @@
       transform-origin: center;
     }
 
-    /* Animations */
-
+    /* General animations */
     @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.98);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     @keyframes fadeInDown {
-      0% {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes cardGlow {
-      0% {
-        box-shadow: 0 0 20px rgba(111, 191, 58, 0.25);
-      }
-      100% {
-        box-shadow: 0 0 35px rgba(154, 223, 107, 0.5);
-      }
+      0% { box-shadow: 0 0 20px rgba(111, 191, 58, 0.25); }
+      100% { box-shadow: 0 0 35px rgba(154, 223, 107, 0.5); }
     }
 
     @keyframes pulseBtn {
-      0% {
-        transform: translateY(0) scale(1);
-      }
-      50% {
-        transform: translateY(-1px) scale(1.05);
-      }
-      100% {
-        transform: translateY(0) scale(1);
-      }
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-1px) scale(1.05); }
+      100% { transform: translateY(0) scale(1); }
     }
 
     @keyframes heartbeat {
-      0%, 100% {
-        transform: scale(1);
-      }
-      10% {
-        transform: scale(1.2);
-      }
-      20% {
-        transform: scale(1);
-      }
-      30% {
-        transform: scale(1.18);
-      }
-      40% {
-        transform: scale(1);
-      }
+      0%, 100% { transform: scale(1); }
+      10% { transform: scale(1.2); }
+      20% { transform: scale(1); }
+      30% { transform: scale(1.18); }
+      40% { transform: scale(1); }
     }
 
     /* Responsive tweaks */
     @media (max-width: 600px) {
-      .bb-header {
-        padding-top: 2rem;
-      }
+      .bb-header { padding-top: 2rem; }
 
-      .bb-title {
-        transform: scale(0.9);
-      }
+      .bb-title { transform: scale(0.9); }
 
-      .bb-main {
-        padding: 1rem;
-      }
+      .bb-main { padding: 1rem; }
 
       .character-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 per row on mobile */
@@ -444,30 +570,24 @@
       }
 
       .character-card {
-        aspect-ratio: 4 / 5;
         padding: 0.65rem;
         border-radius: 1rem;
       }
 
-      .section-title {
-        font-size: 1.1rem;
-      }
+      .section-title { font-size: 1.1rem; }
+      .section-subtitle { font-size: 0.85rem; }
 
-      .section-subtitle {
-        font-size: 0.85rem;
-      }
-
-      .character-name {
-        font-size: 0.9rem;
-      }
-
-      .character-description {
-        font-size: 0.75rem;
-      }
+      .character-name { font-size: 0.9rem; }
+      .character-description { font-size: 0.75rem; }
 
       .audio-btn {
         font-size: 0.7rem;
         padding: 0.35rem 0.7rem;
+      }
+
+      .meth-container {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -495,11 +615,11 @@
     <section class="character-section">
       <h1 class="section-title">Character Lab</h1>
       <p class="section-subtitle">
-        Hover over each tile like you’re inspecting a new compound. Click the button to hear their signature sound.
+        Hover over each tile like you’re inspecting a new compound. Click the buttons to hear their signature sounds.
       </p>
 
       <div class="character-grid">
-        <!-- Walter White - Say My Name -->
+        <!-- Walter White -->
         <article class="character-card">
           <div class="character-element">
             <span class="element-number">1</span>
@@ -517,32 +637,14 @@
               Mild-mannered chemistry teacher turned meth kingpin. Specializes in crystal-clear compounds and morally
               questionable decisions.
             </p>
-            <button class="audio-btn" data-audio="audio/walter-white.mp3">
-              Say My Name
-            </button>
-          </div>
-        </article>
-
-        <!-- Walter White - I Am The Danger -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">6</span>
-            <span class="element-symbol">Ww</span>
-            <span class="element-weight">58.7</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/walter-white.jpg" alt="Walter White" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Walter White <span class="alias">(I Am The Danger)</span>
-            </h2>
-            <p class="character-description">
-              The man who knocks. From desperate teacher to unstoppable force, crystallizing fear in every reaction.
-            </p>
-            <button class="audio-btn" data-audio="audio/walter-danger.mp3">
-              I Am The Danger
-            </button>
+            <div>
+              <button class="audio-btn" data-audio="audio/walter-white.mp3">
+                Say My Name
+              </button>
+              <button class="audio-btn" data-audio="audio/walter-danger.mp3">
+                I Am The Danger
+              </button>
+            </div>
           </div>
         </article>
 
@@ -641,6 +743,37 @@
           </div>
         </article>
       </div>
+
+      <!-- Meth quiz section -->
+      <section class="meth-section">
+        <h2 class="meth-title">Final Reaction Test</h2>
+        <p class="meth-subtitle">
+          One last experiment. Look at the crystal below and tell the lab: <strong>what is this substance called?</strong>
+        </p>
+
+        <div class="meth-container">
+          <div class="meth-image-wrapper" id="meth-image-wrapper">
+            <!-- Replace with your real meth image -->
+            <img src="images/meth-crystal.png" alt="Mysterious blue crystal" id="meth-image" />
+          </div>
+
+          <div class="meth-quiz">
+            <p class="meth-question">
+              Type your answer below. Spell it right if you know your chemistry.
+            </p>
+            <div class="meth-input-row">
+              <input
+                type="text"
+                id="meth-answer"
+                placeholder="Hint: Heisenberg's most famous product..."
+                autocomplete="off"
+              />
+              <button class="meth-submit-btn" id="meth-submit">Submit</button>
+            </div>
+            <p class="meth-feedback" id="meth-feedback"></p>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -650,56 +783,129 @@
 
   <!-- INLINE JS -->
   <script>
-    // Simple audio controller so only one character plays at a time
     let currentAudio = null;
     let currentButton = null;
 
+    function playAudio(src, button = null) {
+      // If clicking same button while playing: stop
+      if (currentButton === button && currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentButton) currentButton.classList.remove("playing");
+        currentAudio = null;
+        currentButton = null;
+        return;
+      }
+
+      // Stop any previous audio
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentButton) currentButton.classList.remove("playing");
+      }
+
+      const audio = new Audio(src);
+      currentAudio = audio;
+      currentButton = button;
+
+      if (button) button.classList.add("playing");
+
+      audio.play().catch((err) => {
+        console.error("Audio playback failed:", err);
+        if (button) button.classList.remove("playing");
+        currentAudio = null;
+        currentButton = null;
+      });
+
+      audio.addEventListener("ended", () => {
+        if (button) button.classList.remove("playing");
+        currentAudio = null;
+        currentButton = null;
+      });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+      /* Character audio buttons */
       const buttons = document.querySelectorAll(".audio-btn");
 
       buttons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const audioSrc = btn.getAttribute("data-audio");
           if (!audioSrc) return;
-
-          // If clicking the currently playing button -> pause / stop
-          if (currentButton === btn && currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            btn.classList.remove("playing");
-            currentAudio = null;
-            currentButton = null;
-            return;
-          }
-
-          // Stop any previous audio
-          if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            if (currentButton) {
-              currentButton.classList.remove("playing");
-            }
-          }
-
-          // Create new audio instance
-          const audio = new Audio(audioSrc);
-          currentAudio = audio;
-          currentButton = btn;
-          btn.classList.add("playing");
-
-          audio.play().catch((err) => {
-            console.error("Audio playback failed:", err);
-            btn.classList.remove("playing");
-            currentAudio = null;
-            currentButton = null;
-          });
-
-          audio.addEventListener("ended", () => {
-            btn.classList.remove("playing");
-            currentAudio = null;
-            currentButton = null;
-          });
+          playAudio(audioSrc, btn);
         });
+      });
+
+      /* Meth quiz logic */
+      const methInput = document.getElementById("meth-answer");
+      const methSubmit = document.getElementById("meth-submit");
+      const methFeedback = document.getElementById("meth-feedback");
+      const methWrapper = document.getElementById("meth-image-wrapper");
+
+      const correctAnswers = [
+        "meth",
+        "methamphetamine",
+        "crystal meth",
+        "blue meth",
+        "methamphetim",  // funny misspelling mentioned by you
+        "methampathim"   // handle that exact spelling too
+      ];
+
+      function setFeedback(message, type) {
+        methFeedback.textContent = message;
+        methFeedback.classList.add("visible");
+        methFeedback.classList.remove("success", "error");
+        if (type) methFeedback.classList.add(type);
+      }
+
+      function handleMethSubmit() {
+        const raw = (methInput.value || "").trim().toLowerCase();
+        if (!raw) {
+          setFeedback("At least guess something, rookie.", "error");
+          return;
+        }
+
+        const isCorrect = correctAnswers.some((ans) => raw.includes(ans));
+
+        // Clear previous animations
+        methWrapper.classList.remove("explode", "shake");
+
+        if (isCorrect) {
+          // Explosion animation + success audio
+          methWrapper.classList.add("explode");
+          setFeedback("Correct! Boom! You clearly know your blue stuff.", "success");
+          playAudio("audio/meth-explode.mp3", null);
+
+          // Reset image after explosion so user can play again
+          setTimeout(() => {
+            methWrapper.classList.remove("explode");
+          }, 1100);
+        } else {
+          // Fun wrong reaction: shake + playful message + error audio
+          methWrapper.classList.add("shake");
+          playAudio("audio/wrong-answer.mp3", null);
+
+          const funMessages = [
+            "Wrong compound. Are you sure you passed chemistry?",
+            "Not quite. Maybe call Saul before answering again.",
+            "Close, but no crystal-clear purity yet.",
+            "That guess was... about 96% impure."
+          ];
+          const msg = funMessages[Math.floor(Math.random() * funMessages.length)];
+          setFeedback(msg, "error");
+
+          setTimeout(() => {
+            methWrapper.classList.remove("shake");
+          }, 600);
+        }
+      }
+
+      methSubmit.addEventListener("click", handleMethSubmit);
+      methInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleMethSubmit();
+        }
       });
     });
   </script>
