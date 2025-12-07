@@ -1,1 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Breaking Bad Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- INLINE CSS -->
+  <style>
+    /* Reset-ish */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bb-green: #6fbf3a;
+      --bb-green-soft: #9adf6b;
+      --bb-bg-dark: #050806;
+      --bb-bg-card: #101614;
+      --bb-border: #325c3a;
+      --bb-text-main: #f7fff1;
+      --bb-text-muted: #c5d8c3;
+      --bb-accent: #f5d36b;
+      --bb-danger: #f05b5b;
+      --bb-shadow-soft: 0 0 35px rgba(111, 191, 58, 0.35);
+      --bb-radius-lg: 1.5rem;
+      --bb-transition-fast: 0.2s ease-out;
+      --bb-transition-med: 0.3s ease-out;
+      --bb-grid-gap: 1.8rem;
+      --bb-max-width: 1100px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* Background */
+    .bb-body {
+      background: radial-gradient(circle at top, #163020 0, #050806 55%, #000 100%);
+      color: var(--bb-text-main);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Faint chemical grid / noise overlay */
+    .chemical-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(111, 191, 58, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(111, 191, 58, 0.08) 1px, transparent 1px);
+      background-size: 70px 70px, 70px 70px;
+      opacity: 0.25;
+      mix-blend-mode: soft-light;
+      z-index: 0;
+    }
+
+    /* Header */
+    .bb-header {
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem 1.5rem 1rem;
+      text-align: center;
+    }
+
+    .bb-title {
+      display: inline-flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .bb-block {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 0.8rem;
+      border: 2px solid var(--bb-border);
+      box-shadow: var(--bb-shadow-soft);
+      background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07), transparent),
+                  linear-gradient(135deg, rgba(17, 39, 23, 0.95), rgba(5, 12, 7, 0.98));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .bb-number {
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      font-size: 0.65rem;
+      color: var(--bb-text-muted);
+    }
+
+    .bb-symbol {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .bb-name {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--bb-green-soft);
+      letter-spacing: 0.09em;
+    }
+
+    .bb-subtitle {
+      margin-top: 0.5rem;
+      color: var(--bb-text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Main layout */
+    .bb-main {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .character-section {
+      width: 100%;
+      max-width: var(--bb-max-width);
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bb-green-soft);
+      margin-bottom: 0.4rem;
+    }
+
+    .section-subtitle {
+      color: var(--bb-text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.6rem;
+    }
+
+    /* Character grid */
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bb-grid-gap);
+    }
+
+    /* Character card */
+    .character-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(8, 18, 11, 0.95), rgba(9, 22, 13, 0.98));
+      border-radius: var(--bb-radius-lg);
+      border: 1px solid rgba(83, 132, 88, 0.7);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: transform var(--bb-transition-med), box-shadow var(--bb-transition-med),
+        border-color var(--bb-transition-med), background 0.4s ease-out;
+      cursor: pointer;
+      /* Square-ish */
+      aspect-ratio: 1 / 1;
+    }
+
+    .character-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.18), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--bb-transition-med);
+    }
+
+    .character-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: var(--bb-shadow-soft);
+      border-color: var(--bb-green-soft);
+    }
+
+    .character-card:hover::before {
+      opacity: 1;
+    }
+
+    /* Element label strip */
+    .character-element {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      font-family: "Courier New", monospace;
+      font-size: 0.7rem;
+      color: var(--bb-text-muted);
+      opacity: 0.9;
+    }
+
+    .element-number {
+      font-size: 0.75rem;
+    }
+
+    .element-symbol {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .element-weight {
+      font-size: 0.7rem;
+    }
+
+    /* Image */
+    .character-img-wrapper {
+      position: relative;
+      flex: 1 1 auto;
+      border-radius: 0.9rem;
+      overflow: hidden;
+      border: 1px solid rgba(111, 191, 58, 0.35);
+    }
+
+    .character-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.05) saturate(1.1);
+      transition: transform var(--bb-transition-med), filter var(--bb-transition-med);
+    }
+
+    .character-card:hover .character-img-wrapper img {
+      transform: scale(1.05);
+      filter: contrast(1.1) saturate(1.2);
+    }
+
+    /* Info */
+    .character-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .character-name {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      align-items: baseline;
+    }
+
+    .alias {
+      font-size: 0.75rem;
+      color: var(--bb-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .character-description {
+      font-size: 0.8rem;
+      color: var(--bb-text-muted);
+      line-height: 1.35;
+    }
+
+    /* Buttons */
+    .audio-btn {
+      margin-top: 0.25rem;
+      align-self: flex-start;
+      border: 1px solid var(--bb-green-soft);
+      background: radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.23), transparent 55%),
+        linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
+      color: var(--bb-text-main);
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform var(--bb-transition-fast), box-shadow var(--bb-transition-fast),
+        background 0.25s ease-out, border-color var(--bb-transition-fast);
+    }
+
+    .audio-btn::before {
+      content: "▶";
+      font-size: 0.8rem;
+    }
+
+    .audio-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--bb-shadow-soft);
+      border-color: var(--bb-green);
+    }
+
+    .audio-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: none;
+    }
+
+    /* Visual state when audio is playing */
+    .audio-btn.playing {
+      border-color: var(--bb-danger);
+      box-shadow: 0 0 25px rgba(240, 91, 91, 0.45);
+    }
+
+    .audio-btn.playing::before {
+      content: "⏸";
+    }
+
+    /* Footer */
+    .bb-footer {
+      position: relative;
+      z-index: 1;
+      padding: 1rem 1.5rem 2rem;
+      text-align: center;
+      color: var(--bb-text-muted);
+      font-size: 0.8rem;
+    }
+
+    .footer-highlight {
+      color: var(--bb-green-soft);
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 600px) {
+      .bb-header {
+        padding-top: 2rem;
+      }
+
+      .bb-title {
+        transform: scale(0.9);
+      }
+
+      .character-card {
+        aspect-ratio: 4 / 5;
+      }
+    }
+  </style>
+</head>
+<body class="bb-body">
+  <div class="chemical-overlay"></div>
+
+  <header class="bb-header">
+    <div class="bb-title">
+      <div class="bb-block">
+        <span class="bb-number">35</span>
+        <span class="bb-symbol">Br</span>
+        <span class="bb-name">Breaking</span>
+      </div>
+      <div class="bb-block">
+        <span class="bb-number">56</span>
+        <span class="bb-symbol">Ba</span>
+        <span class="bb-name">Bad</span>
+      </div>
+    </div>
+    <p class="bb-subtitle">Welcome to the chemistry of questionable life choices.</p>
+  </header>
+
+  <main class="bb-main">
+    <section class="character-section">
+      <h1 class="section-title">Character Lab</h1>
+      <p class="section-subtitle">
+        Hover over each tile like you’re inspecting a new compound. Click the button to hear their signature sound.
+      </p>
+
+      <div class="character-grid">
+        <!-- Walter White -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">1</span>
+            <span class="element-symbol">Ww</span>
+            <span class="element-weight">58.7</span>
+          </div>
+          <div class="character-img-wrapper">
+            <!-- Replace with your real image file -->
+            <img src="images/walter-white.jpg" alt="Walter White" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Walter White <span class="alias">(Heisenberg)</span>
+            </h2>
+            <p class="character-description">
+              Mild-mannered chemistry teacher turned meth kingpin. Specializes in crystal-clear compounds and morally
+              questionable decisions.
+            </p>
+            <!-- Replace data-audio value with your actual audio file -->
+            <button class="audio-btn" data-audio="audio/walter-white.mp3">
+              Say My Name
+            </button>
+          </div>
+        </article>
+
+        <!-- Jesse Pinkman -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">2</span>
+            <span class="element-symbol">Jp</span>
+            <span class="element-weight">27.3</span>
+          </div>
+          <div class="character-img-wrapper">
+            <img src="images/jesse-pinkman.jpg" alt="Jesse Pinkman" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Jesse Pinkman <span class="alias">(Cap'n Cook)</span>
+            </h2>
+            <p class="character-description">
+              From small-time slinger to reluctant partner in a high-purity empire. Brings chaos, loyalty, and “Yeah
+              science!” energy.
+            </p>
+            <button class="audio-btn" data-audio="audio/jesse-pinkman.mp3">
+              Yeah, Science!
+            </button>
+          </div>
+        </article>
+
+        <!-- Saul Goodman -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">3</span>
+            <span class="element-symbol">Sg</span>
+            <span class="element-weight">41.0</span>
+          </div>
+          <div class="character-img-wrapper">
+            <img src="images/saul-goodman.jpg" alt="Saul Goodman" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Saul Goodman <span class="alias">(James McGill)</span>
+            </h2>
+            <p class="character-description">
+              Criminal lawyer — emphasis on criminal. Expert in legal loopholes, late-night TV ads, and radioactive
+              suits.
+            </p>
+            <button class="audio-btn" data-audio="audio/saul-goodman.mp3">
+              Better Call Saul
+            </button>
+          </div>
+        </article>
+
+        <!-- Gale Boetticher -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">4</span>
+            <span class="element-symbol">Gb</span>
+            <span class="element-weight">39.9</span>
+          </div>
+          <div class="character-img-wrapper">
+            <img src="images/gale-boetticher.jpg" alt="Gale Boetticher" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Gale Boetticher <span class="alias">(Lab Purist)</span>
+            </h2>
+            <p class="character-description">
+              Gentle chemist with a love for precision, good coffee, and perfect lab notes. Treats meth like a science
+              fair project.
+            </p>
+            <button class="audio-btn" data-audio="audio/gale-boetticher.mp3">
+              Lab Notes Recital
+            </button>
+          </div>
+        </article>
+
+        <!-- Hank Schrader -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">5</span>
+            <span class="element-symbol">Hs</span>
+            <span class="element-weight">44.2</span>
+          </div>
+          <div class="character-img-wrapper">
+            <img src="images/hank-schrader.jpg" alt="Hank Schrader" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Hank Schrader <span class="alias">(ASAC Schrader)</span>
+            </h2>
+            <p class="character-description">
+              DEA agent with a nose for trouble and a hobby in mineral collecting. Hunting Heisenberg, one clue at a
+              time.
+            </p>
+            <button class="audio-btn" data-audio="audio/hank-schrader.mp3">
+              Schrader Slam
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bb-footer">
+    <p>Fan project inspired by <span class="footer-highlight">Breaking Bad</span>. All rights belong to their respective owners.</p>
+  </footer>
+
+  <!-- INLINE JS -->
+  <script>
+    // Simple audio controller so only one character plays at a time
+    let currentAudio = null;
+    let currentButton = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const buttons = document.querySelectorAll(".audio-btn");
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const audioSrc = btn.getAttribute("data-audio");
+          if (!audioSrc) return;
+
+          // If clicking the currently playing button -> pause / stop
+          if (currentButton === btn && currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            btn.classList.remove("playing");
+            currentAudio = null;
+            currentButton = null;
+            return;
+          }
+
+          // Stop any previous audio
+          if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            if (currentButton) {
+              currentButton.classList.remove("playing");
+            }
+          }
+
+          // Create new audio instance
+          const audio = new Audio(audioSrc);
+          currentAudio = audio;
+          currentButton = btn;
+          btn.classList.add("playing");
+
+          audio.play().catch((err) => {
+            console.error("Audio playback failed:", err);
+            btn.classList.remove("playing");
+            currentAudio = null;
+            currentButton = null;
+          });
+
+          audio.addEventListener("ended", () => {
+            btn.classList.remove("playing");
+            currentAudio = null;
+            currentButton = null;
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
