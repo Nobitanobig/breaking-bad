@@ -187,12 +187,13 @@
     }
 
     .character-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.18), transparent 60%);
-      opacity: 0;
-      transition: opacity var(--bb-transition-med);
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(111, 191, 58, 0.18), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--bb-transition-med);
+  pointer-events: none; /* FIX — allows buttons to be clicked */
     }
 
     .character-card:hover {
