@@ -60,6 +60,16 @@
       opacity: 0.25;
       mix-blend-mode: soft-light;
       z-index: 0;
+      animation: driftGrid 20s linear infinite alternate;
+    }
+
+    @keyframes driftGrid {
+      0% {
+        background-position: 0 0, 0 0;
+      }
+      100% {
+        background-position: 40px 40px, -40px -40px;
+      }
     }
 
     /* Header */
@@ -68,6 +78,7 @@
       z-index: 1;
       padding: 2.5rem 1.5rem 1rem;
       text-align: center;
+      animation: fadeInDown 0.9s ease-out both;
     }
 
     .bb-title {
@@ -90,6 +101,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.1rem;
+      animation: cardGlow 3s ease-in-out infinite alternate;
     }
 
     .bb-number {
@@ -117,6 +129,8 @@
       margin-top: 0.5rem;
       color: var(--bb-text-muted);
       font-size: 0.95rem;
+      animation: fadeInUp 0.9s ease-out both;
+      animation-delay: 0.25s;
     }
 
     /* Main layout */
@@ -126,6 +140,8 @@
       padding: 1.5rem;
       display: flex;
       justify-content: center;
+      animation: fadeInUp 0.8s ease-out both;
+      animation-delay: 0.2s;
     }
 
     .character-section {
@@ -151,7 +167,7 @@
     /* Character grid */
     .character-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: var(--bb-grid-gap);
     }
 
@@ -170,8 +186,8 @@
       transition: transform var(--bb-transition-med), box-shadow var(--bb-transition-med),
         border-color var(--bb-transition-med), background 0.4s ease-out;
       cursor: pointer;
-      /* Square-ish */
       aspect-ratio: 1 / 1;
+      animation: fadeInUp 0.7s ease-out both;
     }
 
     .character-card::before {
@@ -184,7 +200,7 @@
     }
 
     .character-card:hover {
-      transform: translateY(-6px) scale(1.01);
+      transform: translateY(-6px) scale(1.02);
       box-shadow: var(--bb-shadow-soft);
       border-color: var(--bb-green-soft);
     }
@@ -192,6 +208,14 @@
     .character-card:hover::before {
       opacity: 1;
     }
+
+    /* Staggered animation for cards */
+    .character-card:nth-child(1) { animation-delay: 0.15s; }
+    .character-card:nth-child(2) { animation-delay: 0.25s; }
+    .character-card:nth-child(3) { animation-delay: 0.35s; }
+    .character-card:nth-child(4) { animation-delay: 0.45s; }
+    .character-card:nth-child(5) { animation-delay: 0.55s; }
+    .character-card:nth-child(6) { animation-delay: 0.65s; }
 
     /* Element label strip */
     .character-element {
@@ -233,7 +257,7 @@
       height: 100%;
       object-fit: cover;
       filter: contrast(1.05) saturate(1.1);
-      transition: transform var(--bb-transition-med), filter var(--bb-transition-med);
+      transition: transform var(--bb-transition-med), filter var(--bb-transition-med), transform 0.3s;
     }
 
     .character-card:hover .character-img-wrapper img {
@@ -288,7 +312,7 @@
       align-items: center;
       gap: 0.4rem;
       transition: transform var(--bb-transition-fast), box-shadow var(--bb-transition-fast),
-        background 0.25s ease-out, border-color var(--bb-transition-fast);
+        background 0.25s ease-out, border-color var(--bb-transition-fast), opacity 0.25s;
     }
 
     .audio-btn::before {
@@ -297,13 +321,13 @@
     }
 
     .audio-btn:hover {
-      transform: translateY(-1px);
+      transform: translateY(-1px) scale(1.03);
       box-shadow: var(--bb-shadow-soft);
       border-color: var(--bb-green);
     }
 
     .audio-btn:active {
-      transform: translateY(1px) scale(0.98);
+      transform: translateY(1px) scale(0.97);
       box-shadow: none;
     }
 
@@ -311,6 +335,7 @@
     .audio-btn.playing {
       border-color: var(--bb-danger);
       box-shadow: 0 0 25px rgba(240, 91, 91, 0.45);
+      animation: pulseBtn 0.8s ease-in-out infinite;
     }
 
     .audio-btn.playing::before {
@@ -325,10 +350,78 @@
       text-align: center;
       color: var(--bb-text-muted);
       font-size: 0.8rem;
+      animation: fadeInUp 0.9s ease-out both;
+      animation-delay: 0.4s;
     }
 
-    .footer-highlight {
-      color: var(--bb-green-soft);
+    .footer-heart {
+      display: inline-block;
+      margin: 0 0.2rem;
+      animation: heartbeat 1.2s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    /* Animations */
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes cardGlow {
+      0% {
+        box-shadow: 0 0 20px rgba(111, 191, 58, 0.25);
+      }
+      100% {
+        box-shadow: 0 0 35px rgba(154, 223, 107, 0.5);
+      }
+    }
+
+    @keyframes pulseBtn {
+      0% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-1px) scale(1.05);
+      }
+      100% {
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% {
+        transform: scale(1);
+      }
+      10% {
+        transform: scale(1.2);
+      }
+      20% {
+        transform: scale(1);
+      }
+      30% {
+        transform: scale(1.18);
+      }
+      40% {
+        transform: scale(1);
+      }
     }
 
     /* Responsive tweaks */
@@ -341,8 +434,40 @@
         transform: scale(0.9);
       }
 
+      .bb-main {
+        padding: 1rem;
+      }
+
+      .character-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 per row on mobile */
+        gap: 1rem;
+      }
+
       .character-card {
         aspect-ratio: 4 / 5;
+        padding: 0.65rem;
+        border-radius: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+      }
+
+      .section-subtitle {
+        font-size: 0.85rem;
+      }
+
+      .character-name {
+        font-size: 0.9rem;
+      }
+
+      .character-description {
+        font-size: 0.75rem;
+      }
+
+      .audio-btn {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.7rem;
       }
     }
   </style>
@@ -374,7 +499,7 @@
       </p>
 
       <div class="character-grid">
-        <!-- Walter White -->
+        <!-- Walter White - Say My Name -->
         <article class="character-card">
           <div class="character-element">
             <span class="element-number">1</span>
@@ -382,7 +507,6 @@
             <span class="element-weight">58.7</span>
           </div>
           <div class="character-img-wrapper">
-            <!-- Replace with your real image file -->
             <img src="images/walter-white.jpg" alt="Walter White" />
           </div>
           <div class="character-info">
@@ -393,9 +517,31 @@
               Mild-mannered chemistry teacher turned meth kingpin. Specializes in crystal-clear compounds and morally
               questionable decisions.
             </p>
-            <!-- Replace data-audio value with your actual audio file -->
             <button class="audio-btn" data-audio="audio/walter-white.mp3">
               Say My Name
+            </button>
+          </div>
+        </article>
+
+        <!-- Walter White - I Am The Danger -->
+        <article class="character-card">
+          <div class="character-element">
+            <span class="element-number">6</span>
+            <span class="element-symbol">Ww</span>
+            <span class="element-weight">58.7</span>
+          </div>
+          <div class="character-img-wrapper">
+            <img src="images/walter-white.jpg" alt="Walter White" />
+          </div>
+          <div class="character-info">
+            <h2 class="character-name">
+              Walter White <span class="alias">(I Am The Danger)</span>
+            </h2>
+            <p class="character-description">
+              The man who knocks. From desperate teacher to unstoppable force, crystallizing fear in every reaction.
+            </p>
+            <button class="audio-btn" data-audio="audio/walter-danger.mp3">
+              I Am The Danger
             </button>
           </div>
         </article>
@@ -448,26 +594,25 @@
           </div>
         </article>
 
-        <!-- Gale Boetticher -->
+        <!-- Gus Fring -->
         <article class="character-card">
           <div class="character-element">
             <span class="element-number">4</span>
-            <span class="element-symbol">Gb</span>
-            <span class="element-weight">39.9</span>
+            <span class="element-symbol">Gf</span>
+            <span class="element-weight">42.1</span>
           </div>
           <div class="character-img-wrapper">
-            <img src="images/gale-boetticher.jpg" alt="Gale Boetticher" />
+            <img src="images/gus-fring.jpg" alt="Gus Fring" />
           </div>
           <div class="character-info">
             <h2 class="character-name">
-              Gale Boetticher <span class="alias">(Lab Purist)</span>
+              Gus Fring <span class="alias">(The Chicken Man)</span>
             </h2>
             <p class="character-description">
-              Gentle chemist with a love for precision, good coffee, and perfect lab notes. Treats meth like a science
-              fair project.
+              Polite businessman on the surface, ruthless mastermind underneath. Runs an empire as clean as his lab.
             </p>
-            <button class="audio-btn" data-audio="audio/gale-boetticher.mp3">
-              Lab Notes Recital
+            <button class="audio-btn" data-audio="audio/gus-fring.mp3">
+              Tread Lightly
             </button>
           </div>
         </article>
@@ -500,7 +645,7 @@
   </main>
 
   <footer class="bb-footer">
-    <p>Fan project inspired by <span class="footer-highlight">Breaking Bad</span>. All rights belong to their respective owners.</p>
+    <p>Made With <span class="footer-heart">❤️</span> By Avinash Gupta!</p>
   </footer>
 
   <!-- INLINE JS -->
