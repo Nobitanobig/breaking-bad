@@ -1,960 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Breaking Bad Lab</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- INLINE CSS -->
-  <style>
-    /* Reset-ish */
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bb-green: #6fbf3a;
-      --bb-green-soft: #9adf6b;
-      --bb-bg-dark: #050806;
-      --bb-bg-card: #101614;
-      --bb-border: #325c3a;
-      --bb-text-main: #f7fff1;
-      --bb-text-muted: #c5d8c3;
-      --bb-accent: #f5d36b;
-      --bb-danger: #f05b5b;
-      --bb-shadow-soft: 0 0 35px rgba(111, 191, 58, 0.35);
-      --bb-radius-lg: 1.5rem;
-      --bb-transition-fast: 0.2s ease-out;
-      --bb-transition-med: 0.3s ease-out;
-      --bb-grid-gap: 1.8rem;
-      --bb-max-width: 1100px;
-    }
-
-    html,
-    body {
-      height: 100%;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    /* Background */
-    .bb-body {
-      background: radial-gradient(circle at top, #163020 0, #050806 55%, #000 100%);
-      color: var(--bb-text-main);
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Faint chemical grid / noise overlay */
-    .chemical-overlay {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(111, 191, 58, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(111, 191, 58, 0.08) 1px, transparent 1px);
-      background-size: 70px 70px, 70px 70px;
-      opacity: 0.25;
-      mix-blend-mode: soft-light;
-      z-index: 0;
-      animation: driftGrid 20s linear infinite alternate;
-    }
-
-    @keyframes driftGrid {
-      0% { background-position: 0 0, 0 0; }
-      100% { background-position: 40px 40px, -40px -40px; }
-    }
-
-    /* Header */
-    .bb-header {
-      position: relative;
-      z-index: 1;
-      padding: 2.5rem 1.5rem 1rem;
-      text-align: center;
-      animation: fadeInDown 0.9s ease-out both;
-    }
-
-    .bb-title {
-      display: inline-flex;
-      gap: 0.75rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .bb-block {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      border-radius: 0.8rem;
-      border: 2px solid var(--bb-border);
-      box-shadow: var(--bb-shadow-soft);
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.07), transparent),
-        linear-gradient(135deg, rgba(17, 39, 23, 0.95), rgba(5, 12, 7, 0.98));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.1rem;
-      animation: cardGlow 3s ease-in-out infinite alternate;
-    }
-
-    .bb-number {
-      position: absolute;
-      top: 4px;
-      left: 6px;
-      font-size: 0.65rem;
-      color: var(--bb-text-muted);
-    }
-
-    .bb-symbol {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .bb-name {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      color: var(--bb-green-soft);
-      letter-spacing: 0.09em;
-    }
-
-    .bb-subtitle {
-      margin-top: 0.5rem;
-      color: var(--bb-text-muted);
-      font-size: 0.95rem;
-      animation: fadeInUp 0.9s ease-out both;
-      animation-delay: 0.25s;
-    }
-
-    /* Main layout */
-    .bb-main {
-      position: relative;
-      z-index: 1;
-      padding: 1.5rem;
-      display: flex;
-      justify-content: center;
-      animation: fadeInUp 0.8s ease-out both;
-      animation-delay: 0.2s;
-    }
-
-    .character-section {
-      width: 100%;
-      max-width: var(--bb-max-width);
-    }
-
-    .section-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--bb-green-soft);
-      margin-bottom: 0.4rem;
-    }
-
-    .section-subtitle {
-      color: var(--bb-text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.6rem;
-    }
-
-    /* Character grid */
-    .character-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: var(--bb-grid-gap);
-    }
-
-    /* Character card */
-    .character-card {
-      position: relative;
-      background: linear-gradient(135deg, rgba(8, 18, 11, 0.95), rgba(9, 22, 13, 0.98));
-      border-radius: var(--bb-radius-lg);
-      border: 1px solid rgba(83, 132, 88, 0.7);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-      padding: 0.9rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-      transition: transform var(--bb-transition-med), box-shadow var(--bb-transition-med),
-        border-color var(--bb-transition-med), background 0.4s ease-out;
-      cursor: pointer;
-      animation: fadeInUp 0.7s ease-out both;
-    }
-
-    .character-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.18), transparent 60%);
-      opacity: 0;
-      transition: opacity var(--bb-transition-med);
-    }
-
-    .character-card:hover {
-      transform: translateY(-6px) scale(1.02);
-      box-shadow: var(--bb-shadow-soft);
-      border-color: var(--bb-green-soft);
-    }
-
-    .character-card:hover::before {
-      opacity: 1;
-    }
-
-    .character-card:nth-child(1) { animation-delay: 0.15s; }
-    .character-card:nth-child(2) { animation-delay: 0.25s; }
-    .character-card:nth-child(3) { animation-delay: 0.35s; }
-    .character-card:nth-child(4) { animation-delay: 0.45s; }
-    .character-card:nth-child(5) { animation-delay: 0.55s; }
-
-    /* Element label strip */
-    .character-element {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      font-family: "Courier New", monospace;
-      font-size: 0.7rem;
-      color: var(--bb-text-muted);
-      opacity: 0.9;
-    }
-
-    .element-number { font-size: 0.75rem; }
-    .element-symbol {
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .element-weight { font-size: 0.7rem; }
-
-    /* Character image */
-    .character-img-wrapper {
-      position: relative;
-      border-radius: 0.9rem;
-      overflow: hidden;
-      border: 1px solid rgba(111, 191, 58, 0.35);
-    }
-
-    .character-img-wrapper img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      filter: contrast(1.05) saturate(1.1);
-      transition: transform var(--bb-transition-med), filter var(--bb-transition-med);
-    }
-
-    .character-card:hover .character-img-wrapper img {
-      transform: scale(1.03);
-      filter: contrast(1.1) saturate(1.2);
-    }
-
-    /* Info */
-    .character-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .character-name {
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      align-items: baseline;
-    }
-
-    .alias {
-      font-size: 0.75rem;
-      color: var(--bb-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-    }
-
-    .character-description {
-      font-size: 0.8rem;
-      color: var(--bb-text-muted);
-      line-height: 1.35;
-    }
-
-    /* Buttons */
-    .audio-btn {
-      margin-top: 0.25rem;
-      align-self: flex-start;
-      border: 1px solid var(--bb-green-soft);
-      background:
-        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.23), transparent 55%),
-        linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
-      color: var(--bb-text-main);
-      padding: 0.45rem 0.8rem;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: transform var(--bb-transition-fast), box-shadow var(--bb-transition-fast),
-        background 0.25s ease-out, border-color var(--bb-transition-fast), opacity 0.25s;
-    }
-
-    .audio-btn + .audio-btn {
-      margin-left: 0.4rem;
-    }
-
-    .audio-btn::before {
-      content: "▶";
-      font-size: 0.8rem;
-    }
-
-    .audio-btn:hover {
-      transform: translateY(-1px) scale(1.03);
-      box-shadow: var(--bb-shadow-soft);
-      border-color: var(--bb-green);
-    }
-
-    .audio-btn:active {
-      transform: translateY(1px) scale(0.97);
-      box-shadow: none;
-    }
-
-    .audio-btn.playing {
-      border-color: var(--bb-danger);
-      box-shadow: 0 0 25px rgba(240, 91, 91, 0.45);
-      animation: pulseBtn 0.8s ease-in-out infinite;
-    }
-
-    .audio-btn.playing::before {
-      content: "⏸";
-    }
-
-    /* Meth quiz section */
-    .meth-section {
-      margin-top: 2.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(111, 191, 58, 0.3);
-      animation: fadeInUp 0.9s ease-out both;
-      animation-delay: 0.65s;
-    }
-
-    .meth-title {
-      font-size: 1.3rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--bb-green-soft);
-      margin-bottom: 0.5rem;
-    }
-
-    .meth-subtitle {
-      font-size: 0.9rem;
-      color: var(--bb-text-muted);
-      margin-bottom: 1.5rem;
-    }
-
-    .meth-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .meth-image-wrapper {
-      flex: 1 1 260px;
-      max-width: 480px;
-      aspect-ratio: 861 / 474;
-      border-radius: 1.2rem;
-      overflow: hidden;
-      border: 2px solid rgba(111, 191, 58, 0.6);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
-      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.2), transparent),
-                  #050806;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .meth-image-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transform-origin: center;
-      transition: transform 0.4s ease-out, filter 0.4s ease-out, opacity 0.4s;
-    }
-
-    .meth-image-wrapper:hover img {
-      transform: scale(1.03);
-      filter: contrast(1.1) saturate(1.15);
-    }
-
-    .meth-quiz {
-      flex: 1 1 260px;
-      max-width: 380px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .meth-question {
-      font-size: 1rem;
-      color: var(--bb-text-main);
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .meth-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .meth-option-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(154, 223, 107, 0.7);
-      background:
-        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.3), transparent 60%),
-        linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
-      padding: 0.6rem 0.9rem;
-      font-size: 0.85rem;
-      text-align: left;
-      cursor: pointer;
-      color: var(--bb-text-main);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.6rem;
-      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out,
-        background 0.2s ease-out, opacity 0.2s ease-out;
-    }
-
-    .meth-option-btn span.label {
-      flex: 1;
-    }
-
-    .meth-option-btn span.tag {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--bb-green-soft);
-      opacity: 0.9;
-    }
-
-    .meth-option-btn:hover {
-      transform: translateY(-1px) scale(1.02);
-      box-shadow: var(--bb-shadow-soft);
-      border-color: var(--bb-green);
-    }
-
-    .meth-option-btn:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: none;
-    }
-
-    .meth-option-btn.selected {
-      border-color: var(--bb-accent);
-      box-shadow: 0 0 18px rgba(245, 211, 107, 0.5);
-    }
-
-    .meth-feedback {
-      min-height: 1.2rem;
-      font-size: 0.85rem;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.25s ease-out, transform 0.25s ease-out, color 0.25s ease-out;
-    }
-
-    .meth-feedback.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .meth-feedback.success {
-      color: var(--bb-green-soft);
-    }
-
-    .meth-feedback.error {
-      color: var(--bb-danger);
-    }
-
-    .meth-result {
-      margin-top: 0.6rem;
-      padding: 0.8rem 0.9rem;
-      border-radius: 1rem;
-      border: 1px dashed rgba(154, 223, 107, 0.5);
-      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.12), transparent 65%),
-                  rgba(5, 12, 7, 0.96);
-      font-size: 0.85rem;
-      line-height: 1.4;
-      display: none;
-      animation: fadeInUp 0.4s ease-out both;
-    }
-
-    .meth-result.visible {
-      display: block;
-    }
-
-    .meth-result-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      color: var(--bb-accent);
-    }
-
-    /* "This Is Not Meth!" heading animation */
-    .meth-result-title.not-meth-animate {
-      animation: notMethFade 1.1s ease-out forwards;
-    }
-
-    @keyframes notMethFade {
-      0%   { opacity: 0; transform: translateY(10px) scale(0.95); }
-      40%  { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-6px) scale(0.96); }
-    }
-
-    .meth-result--video video {
-      width: 100%;
-      margin-top: 0.4rem;
-      border-radius: 0.8rem;
-      border: 1px solid rgba(245, 211, 107, 0.6);
-      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.8);
-      background: #000;
-    }
-
-    .meth-result-note {
-      font-size: 0.75rem;
-      color: var(--bb-text-muted);
-      margin-top: 0.3rem;
-    }
-
-    /* Fun animation for option 2 result */
-    .meth-result.fun-pop {
-      animation: funPop 0.4s ease-out both;
-    }
-
-    @keyframes funPop {
-      0% { transform: scale(0.9); opacity: 0; }
-      60% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* Footer */
-    .bb-footer {
-      position: relative;
-      z-index: 1;
-      padding: 1rem 1.5rem 2rem;
-      text-align: center;
-      color: var(--bb-text-muted);
-      font-size: 0.8rem;
-      animation: fadeInUp 0.9s ease-out both;
-      animation-delay: 0.8s;
-    }
-
-    .footer-heart {
-      display: inline-block;
-      margin: 0 0.2rem;
-      animation: heartbeat 1.2s ease-in-out infinite;
-      transform-origin: center;
-    }
-
-    /* General animations */
-    @keyframes fadeInUp {
-      0% { opacity: 0; transform: translateY(20px) scale(0.98); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes fadeInDown {
-      0% { opacity: 0; transform: translateY(-20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes cardGlow {
-      0% { box-shadow: 0 0 20px rgba(111, 191, 58, 0.25); }
-      100% { box-shadow: 0 0 35px rgba(154, 223, 107, 0.5); }
-    }
-
-    @keyframes pulseBtn {
-      0% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-1px) scale(1.05); }
-      100% { transform: translateY(0) scale(1); }
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      10% { transform: scale(1.2); }
-      20% { transform: scale(1); }
-      30% { transform: scale(1.18); }
-      40% { transform: scale(1); }
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 600px) {
-      .bb-header { padding-top: 2rem; }
-      .bb-title { transform: scale(0.9); }
-      .bb-main { padding: 1rem; }
-
-      .character-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1rem;
-      }
-
-      .character-card {
-        padding: 0.65rem;
-        border-radius: 1rem;
-      }
-
-      .section-title { font-size: 1.1rem; }
-      .section-subtitle { font-size: 0.85rem; }
-
-      .character-name { font-size: 0.9rem; }
-      .character-description { font-size: 0.75rem; }
-
-      .audio-btn {
-        font-size: 0.7rem;
-        padding: 0.35rem 0.7rem;
-      }
-
-      .meth-container {
-        flex-direction: column;
-        align-items: stretch;
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Breaking Bad Lab — Final Reaction</title>
+
+<style>
+  /* Reset */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bb-green:#6fbf3a;--bb-green-soft:#9adf6b;--bb-bg:#050806;
+    --bb-text:#f7fff1;--bb-muted:#c5d8c3;--bb-accent:#f5d36b;--bb-danger:#f05b5b;
+    --card-radius:1.2rem;--shadow:0 16px 40px rgba(0,0,0,.65)
+  }
+  html,body{
+    height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:radial-gradient(circle at top,#163020 0,#050806 55%,#000 100%);
+    color:var(--bb-text);-webkit-font-smoothing:antialiased
+  }
+  .container{max-width:1100px;margin:0 auto;padding:20px}
+
+  /* Header */
+  header{padding:28px 12px 8px;text-align:center}
+  .title-row{display:inline-flex;gap:.7rem;margin-bottom:.6rem}
+  .periodic{
+    width:72px;height:72px;border-radius:.8rem;border:2px solid rgba(50,92,58,.9);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,rgba(17,39,23,.95),rgba(5,12,7,.98));box-shadow:0 0 30px rgba(111,191,58,.18)
+  }
+  .periodic .sym{font-weight:700;font-size:1.3rem;color:var(--bb-green-soft)}
+  .subtitle{color:var(--bb-muted);margin-top:.35rem}
+
+  /* Grid of characters */
+  .character-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:24px;margin-top:20px}
+  .card{
+    background:linear-gradient(135deg,rgba(8,18,11,.95),rgba(9,22,13,.98));
+    border-radius:1rem;border:1px solid rgba(83,132,88,.6);box-shadow:var(--shadow);
+    overflow:hidden;padding:12px;display:flex;flex-direction:column;gap:.5rem;transition:transform .25s
+  }
+  .card:hover{transform:translateY(-6px)}
+  .img-wrap{border-radius:.8rem;overflow:hidden;border:1px solid rgba(111,191,58,.25)}
+  .img-wrap img{display:block;width:100%;height:auto;object-fit:contain;transition:transform .3s}
+  .card:hover .img-wrap img{transform:scale(1.03)}
+  .name{font-weight:700}.alias{color:var(--bb-accent);font-size:.78rem;text-transform:uppercase}
+  .desc{color:var(--bb-muted);font-size:.88rem;line-height:1.3}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .8rem;border-radius:999px;
+    border:1px solid var(--bb-green-soft);
+    background:linear-gradient(135deg,rgba(13,37,16,.95),rgba(12,29,14,.98));
+    color:var(--bb-text);cursor:pointer;font-size:.78rem;text-transform:uppercase;transition:transform .12s
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn.playing{border-color:var(--bb-danger);box-shadow:0 0 20px rgba(240,91,91,.35)}
+
+  /* --- Meth section --- */
+  .meth-section{margin-top:36px;padding-top:18px;border-top:1px solid rgba(111,191,58,.18)}
+  .meth-title{font-size:1.4rem;color:var(--bb-green-soft);letter-spacing:.06em;margin-bottom:.35rem}
+  .meth-sub{color:var(--bb-muted);margin-bottom:14px}
+
+  .meth-row{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+
+  /* Image / video area: responsive, uses natural image aspect ratio */
+  .meth-image-wrap{
+    flex:1 1 480px;max-width:861px;border-radius:1rem;overflow:hidden;
+    border:2px solid rgba(111,191,58,.55);
+    background:linear-gradient(180deg,rgba(111,191,58,.06),transparent);
+    box-shadow:var(--shadow);position:relative;padding:8px;
+    display:flex;align-items:center;justify-content:center
+  }
+  .meth-image-wrap img{
+    display:block;max-width:100%;height:auto;object-fit:contain;
+    transition:opacity .35s ease,transform .35s ease
+  }
+  .meth-image-wrap video{
+    display:none;width:100%;height:auto;border-radius:.6rem;background:#000
+  }
+
+  /* quiz controls */
+  .meth-quiz{flex:1 1 380px;max-width:420px}
+  .question{font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.5rem}
+  .options{display:flex;flex-direction:column;gap:12px}
+  .option-btn{
+    display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:999px;
+    background:linear-gradient(90deg, rgba(20,40,24,.45), rgba(8,16,10,.5));
+    border:1px solid rgba(154,223,107,.12);color:var(--bb-text);cursor:pointer;
+    transition:transform .12s,box-shadow .12s,border-color .12s
+  }
+  .option-btn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,.55)}
+  .option-btn.selected{border-color:var(--bb-accent);box-shadow:0 0 18px rgba(245,211,107,.4)}
+  .option-label{flex:1;text-align:left}
+  .option-tag{font-size:.75rem;color:var(--bb-green-soft);opacity:.95}
+  .feedback{margin-top:10px;min-height:20px;color:var(--bb-muted)}
+
+  .result-box{
+    margin-top:14px;padding:14px;border-radius:.9rem;border:1px dashed rgba(154,223,107,.25);
+    background:linear-gradient(180deg, rgba(111,191,58,.05), rgba(5,12,7,.94));
+    display:none;color:var(--bb-text)
+  }
+  .result-box.visible{display:block}
+  .fun-pop{animation:funPop .38s ease-out both}
+  @keyframes funPop{0%{transform:scale(.96);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1);opacity:1}}
+
+  /* footer */
+  footer{text-align:center;padding:20px 10px;color:var(--bb-muted)}
+  .heart{display:inline-block;animation:heartbeat 1.2s ease-in-out infinite}
+  @keyframes heartbeat{0%,100%{transform:scale(1)}10%{transform:scale(1.22)}30%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+  /* responsive */
+  @media(max-width:700px){
+    .container{padding:18px}
+    .meth-row{flex-direction:column-reverse}
+    .meth-image-wrap{max-width:100%}
+  }
+</style>
 </head>
-<body class="bb-body">
-  <div class="chemical-overlay"></div>
-
-  <header class="bb-header">
-    <div class="bb-title">
-      <div class="bb-block">
-        <span class="bb-number">35</span>
-        <span class="bb-symbol">Br</span>
-        <span class="bb-name">Breaking</span>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-row">
+        <div class="periodic"><div class="sym">Br</div><div style="font-size:.7rem;color:var(--bb-muted)">Breaking</div></div>
+        <div class="periodic"><div class="sym">Ba</div><div style="font-size:.7rem;color:var(--bb-muted)">Bad</div></div>
       </div>
-      <div class="bb-block">
-        <span class="bb-number">56</span>
-        <span class="bb-symbol">Ba</span>
-        <span class="bb-name">Bad</span>
-      </div>
-    </div>
-    <p class="bb-subtitle">Welcome to the chemistry of questionable life choices.</p>
-  </header>
+      <div class="subtitle">Welcome to the chemistry of questionable life choices.</div>
+    </header>
 
-  <main class="bb-main">
-    <section class="character-section">
-      <h1 class="section-title">Character Lab</h1>
-      <p class="section-subtitle">
-        Hover over each tile like you’re inspecting a new compound. Click the buttons to hear their signature sounds.
-      </p>
-
-      <div class="character-grid">
-        <!-- Walter White -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">1</span>
-            <span class="element-symbol">Ww</span>
-            <span class="element-weight">58.7</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/walter-white.jpg" alt="Walter White" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Walter White <span class="alias">(Heisenberg)</span>
-            </h2>
-            <p class="character-description">
-              Mild-mannered chemistry teacher turned meth kingpin. Specializes in crystal-clear compounds and morally
-              questionable decisions.
-            </p>
-            <div>
-              <button class="audio-btn" data-audio="audio/walter-white.mp3">
-                Say My Name
-              </button>
-              <button class="audio-btn" data-audio="audio/walter-danger.mp3">
-                I Am The Danger
-              </button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Jesse Pinkman -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">2</span>
-            <span class="element-symbol">Jp</span>
-            <span class="element-weight">27.3</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/jesse-pinkman.jpg" alt="Jesse Pinkman" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Jesse Pinkman <span class="alias">(Cap'n Cook)</span>
-            </h2>
-            <p class="character-description">
-              From small-time slinger to reluctant partner in a high-purity empire. Brings chaos, loyalty, and “Yeah
-              science!” energy.
-            </p>
-            <button class="audio-btn" data-audio="audio/jesse-pinkman.mp3">
-              Yeah, Science!
-            </button>
-          </div>
-        </article>
-
-        <!-- Saul Goodman -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">3</span>
-            <span class="element-symbol">Sg</span>
-            <span class="element-weight">41.0</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/saul-goodman.jpg" alt="Saul Goodman" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Saul Goodman <span class="alias">(James McGill)</span>
-            </h2>
-            <p class="character-description">
-              Criminal lawyer — emphasis on criminal. Expert in legal loopholes, late-night TV ads, and radioactive
-              suits.
-            </p>
-            <button class="audio-btn" data-audio="audio/saul-goodman.mp3">
-              Better Call Saul
-            </button>
-          </div>
-        </article>
-
-        <!-- Gus Fring -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">4</span>
-            <span class="element-symbol">Gf</span>
-            <span class="element-weight">42.1</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/gus-fring.jpg" alt="Gus Fring" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Gus Fring <span class="alias">(The Chicken Man)</span>
-            </h2>
-            <p class="character-description">
-              Polite businessman on the surface, ruthless mastermind underneath. Runs an empire as clean as his lab.
-            </p>
-            <button class="audio-btn" data-audio="audio/gus-fring.mp3">
-              Tread Lightly
-            </button>
-          </div>
-        </article>
-
-        <!-- Hank Schrader -->
-        <article class="character-card">
-          <div class="character-element">
-            <span class="element-number">5</span>
-            <span class="element-symbol">Hs</span>
-            <span class="element-weight">44.2</span>
-          </div>
-          <div class="character-img-wrapper">
-            <img src="images/hank-schrader.jpg" alt="Hank Schrader" />
-          </div>
-          <div class="character-info">
-            <h2 class="character-name">
-              Hank Schrader <span class="alias">(ASAC Schrader)</span>
-            </h2>
-            <p class="character-description">
-              DEA agent with a nose for trouble and a hobby in mineral collecting. Hunting Heisenberg, one clue at a
-              time.
-            </p>
-            <button class="audio-btn" data-audio="audio/hank-schrader.mp3">
-              Schrader Slam
-            </button>
-          </div>
-        </article>
-      </div>
-
-      <!-- Meth quiz section -->
-      <section class="meth-section">
-        <h2 class="meth-title">Final Reaction Test</h2>
-        <p class="meth-subtitle">
-          One last experiment. Look at the crystal below and answer the lab’s question.
-        </p>
-
-        <div class="meth-container">
-          <div class="meth-image-wrapper" id="meth-image-wrapper">
-            <img src="images/meth-crystal.png" alt="Mysterious blue crystal" id="meth-image" />
-          </div>
-
-          <div class="meth-quiz">
-            <p class="meth-question">What is this?</p>
-
-            <div class="meth-options">
-              <button class="meth-option-btn" data-choice="meth">
-                <span class="label">Meth</span>
-                <span class="tag">Option 1</span>
-              </button>
-
-              <button class="meth-option-btn" data-choice="candy">
-                <span class="label">Limited edition blue rock candy 😋</span>
-                <span class="tag">Option 2</span>
-              </button>
-            </div>
-
-            <p class="meth-feedback" id="meth-feedback"></p>
-
-            <!-- Result if user picks Meth -->
-            <div class="meth-result meth-result--video" id="meth-video-result">
-              <h3 class="meth-result-title" id="meth-video-heading">This Is Not Meth!</h3>
-              <p>
-                You really thought it was that simple? Heisenberg always has one more surprise reaction up his sleeve.
-              </p>
-              <!-- You will add this video file later -->
-              <video id="meth-video" src="video/not-meth.mp4" controls></video>
-              <p class="meth-result-note">
-                The video should auto-play after the reveal. If your browser blocks it, just hit play.
-              </p>
-            </div>
-
-            <!-- Result if user picks option 2 -->
-            <div class="meth-result" id="meth-fun-result">
-              <h3 class="meth-result-title">You Might Actually Live Through This Lab Session.</h3>
-              <p>
-                Nope! This belongs in Heisenberg’s cook. You can retry, if you dare.
-              </p>
-              <p class="meth-result-note">
-                Smart answer, though. Never admit anything in a lab… or to the DEA.
-              </p>
-            </div>
+    <!-- Character grid -->
+    <section class="character-grid" aria-label="Characters">
+      <!-- Walter -->
+      <article class="card">
+        <div class="img-wrap"><img src="images/walter-white.jpg" alt="Walter White" /></div>
+        <div>
+          <div class="name">Walter White <span class="alias">(Heisenberg)</span></div>
+          <div class="desc">Mild-mannered chemistry teacher turned meth kingpin. Specializes in crystal-clear compounds and morally questionable decisions.</div>
+          <div style="margin-top:8px">
+            <button class="btn audio-btn" data-audio="audio/walter-white.mp3">Say My Name</button>
+            <button class="btn audio-btn" data-audio="audio/walter-danger.mp3">I Am The Danger</button>
           </div>
         </div>
-      </section>
+      </article>
+
+      <!-- Jesse -->
+      <article class="card">
+        <div class="img-wrap"><img src="images/jesse-pinkman.jpg" alt="Jesse Pinkman" /></div>
+        <div>
+          <div class="name">Jesse Pinkman <span class="alias">(Cap'n Cook)</span></div>
+          <div class="desc">From small-time slinger to reluctant partner in a high-purity empire. Brings chaos, loyalty, and “Yeah science!” energy.</div>
+          <div style="margin-top:8px"><button class="btn audio-btn" data-audio="audio/jesse-pinkman.mp3">Yeah, Science!</button></div>
+        </div>
+      </article>
+
+      <!-- Saul -->
+      <article class="card">
+        <div class="img-wrap"><img src="images/saul-goodman.jpg" alt="Saul Goodman" /></div>
+        <div>
+          <div class="name">Saul Goodman <span class="alias">(James McGill)</span></div>
+          <div class="desc">Criminal lawyer — emphasis on criminal. Expert in legal loopholes, late-night TV ads, and radioactive suits.</div>
+          <div style="margin-top:8px"><button class="btn audio-btn" data-audio="audio/saul-goodman.mp3">Better Call Saul</button></div>
+        </div>
+      </article>
+
+      <!-- Gus -->
+      <article class="card">
+        <div class="img-wrap"><img src="images/gus-fring.jpg" alt="Gus Fring" /></div>
+        <div>
+          <div class="name">Gus Fring <span class="alias">(The Chicken Man)</span></div>
+          <div class="desc">Polite businessman on the surface, ruthless mastermind underneath. Runs an empire as clean as his lab.</div>
+          <div style="margin-top:8px"><button class="btn audio-btn" data-audio="audio/gus-fring.mp3">Tread Lightly</button></div>
+        </div>
+      </article>
+
+      <!-- Hank -->
+      <article class="card">
+        <div class="img-wrap"><img src="images/hank-schrader.jpg" alt="Hank Schrader" /></div>
+        <div>
+          <div class="name">Hank Schrader <span class="alias">(ASAC Schrader)</span></div>
+          <div class="desc">DEA agent with a nose for trouble and a hobby in mineral collecting. Hunting Heisenberg, one clue at a time.</div>
+          <div style="margin-top:8px"><button class="btn audio-btn" data-audio="audio/hank-schrader.mp3">Schrader Slam</button></div>
+        </div>
+      </article>
     </section>
-  </main>
 
-  <footer class="bb-footer">
-    <p>Made With <span class="footer-heart">❤️</span> By Avinash Gupta!</p>
-  </footer>
+    <!-- METH QUIZ -->
+    <section class="meth-section" aria-labelledby="meth-heading">
+      <h2 id="meth-heading" class="meth-title">Final Reaction Test</h2>
+      <p class="meth-sub">One last experiment. Look at the crystal below and answer the lab’s question.</p>
 
-  <!-- INLINE JS -->
-  <script>
-    /* Shared audio handler (for character buttons) */
-    let currentAudio = null;
-    let currentButton = null;
+      <div class="meth-row">
+        <!-- IMAGE / VIDEO AREA -->
+        <div class="meth-image-wrap" id="meth-image-wrap">
+          <img id="meth-image" src="images/meth-crystal.png" alt="mysterious crystal" />
+          <!-- video replaces image here after fade -->
+          <video id="meth-video" src="video/not-meth.mp4" controls playsinline></video>
+        </div>
 
-    function playAudio(src, button = null) {
-      if (currentButton === button && currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        if (currentButton) currentButton.classList.remove("playing");
-        currentAudio = null;
-        currentButton = null;
-        return;
-      }
+        <!-- QUIZ CONTROLS -->
+        <div class="meth-quiz">
+          <div class="question">What is this?</div>
 
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        if (currentButton) currentButton.classList.remove("playing");
-      }
+          <div class="options">
+            <button class="option-btn" data-choice="meth" id="opt-meth">
+              <div class="option-label"><strong>Meth 🧊</strong></div>
+              <div class="option-tag">Option 1</div>
+            </button>
 
-      const audio = new Audio(src);
-      currentAudio = audio;
-      currentButton = button;
+            <button class="option-btn" data-choice="candy" id="opt-candy">
+              <div class="option-label">Limited edition blue rock candy 😋</div>
+              <div class="option-tag">Option 2</div>
+            </button>
+          </div>
 
-      if (button) button.classList.add("playing");
+          <div class="feedback" id="meth-feedback" aria-live="polite"></div>
 
-      audio.play().catch((err) => {
-        console.error("Audio playback failed:", err);
-        if (button) button.classList.remove("playing");
-        currentAudio = null;
-        currentButton = null;
-      });
+          <div class="result-box" id="fun-result">
+            <p>Nope! This belongs in Heisenberg’s cook. You can retry, if you dare.</p>
+            <p style="color:var(--bb-muted);margin-top:8px;font-size:.86rem">
+              Smart answer, though. Never admit anything in a lab… or to the DEA.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-      audio.addEventListener("ended", () => {
-        if (button) button.classList.remove("playing");
-        currentAudio = null;
-        currentButton = null;
-      });
-    }
+    <footer style="margin-top:28px;text-align:center;color:var(--bb-muted)">
+      Made With <span class="heart">❤️</span> By Avinash Gupta!
+    </footer>
+  </div>
 
-    document.addEventListener("DOMContentLoaded", () => {
-      /* Character audio buttons */
-      const buttons = document.querySelectorAll(".audio-btn");
-      buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const audioSrc = btn.getAttribute("data-audio");
-          if (!audioSrc) return;
-          playAudio(audioSrc, btn);
-        });
-      });
+<script>
+/* --- Audio handler for character buttons --- */
+let currentAudio=null,currentBtn=null;
+function playAudio(src,btn){
+  if(currentBtn===btn && currentAudio){
+    currentAudio.pause();currentAudio.currentTime=0;
+    if(currentBtn) currentBtn.classList.remove('playing');
+    currentAudio=null;currentBtn=null;return;
+  }
+  if(currentAudio){
+    currentAudio.pause();currentAudio.currentTime=0;
+    if(currentBtn) currentBtn.classList.remove('playing');
+  }
+  if(!src) return;
+  const a=new Audio(src);currentAudio=a;currentBtn=btn;
+  if(btn) btn.classList.add('playing');
+  a.play().catch(()=>{if(btn) btn.classList.remove('playing');currentAudio=null;currentBtn=null;});
+  a.addEventListener('ended',()=>{if(btn) btn.classList.remove('playing');currentAudio=null;currentBtn=null;});
+}
+document.querySelectorAll('.audio-btn').forEach(b=>{
+  b.addEventListener('click',()=>playAudio(b.dataset.audio,b));
+});
 
-      /* Meth quiz logic */
-      const optionButtons = document.querySelectorAll(".meth-option-btn");
-      const methFeedback = document.getElementById("meth-feedback");
-      const methVideoResult = document.getElementById("meth-video-result");
-      const methFunResult = document.getElementById("meth-fun-result");
-      const methVideo = document.getElementById("meth-video");
-      const methHeading = document.getElementById("meth-video-heading");
+/* --- Meth quiz behaviour --- */
+const optMeth=document.getElementById('opt-meth');
+const optCandy=document.getElementById('opt-candy');
+const feedback=document.getElementById('meth-feedback');
+const funResult=document.getElementById('fun-result');
 
-      function clearResults() {
-        methVideoResult.classList.remove("visible");
-        methFunResult.classList.remove("visible", "fun-pop");
-      }
+const methImage=document.getElementById('meth-image');
+const methVideo=document.getElementById('meth-video');
 
-      function clearSelectedButtons() {
-        optionButtons.forEach((b) => b.classList.remove("selected"));
-      }
+function clearSelections(){
+  [optMeth,optCandy].forEach(b=>b.classList.remove('selected'));
+  feedback.textContent='';
+  funResult.classList.remove('visible','fun-pop');
+}
 
-      function setFeedback(message, type) {
-        methFeedback.textContent = message;
-        methFeedback.classList.add("visible");
-        methFeedback.classList.remove("success", "error");
-        if (type) methFeedback.classList.add(type);
-      }
+// crossfade: image fades out, then video appears
+function crossfadeToVideo(){
+  // reset states
+  methVideo.pause();
+  methVideo.style.display='none';
+  methVideo.currentTime=0;
+  methImage.style.display='block';
+  methImage.style.opacity='1';
 
-      optionButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const choice = btn.getAttribute("data-choice");
-          clearSelectedButtons();
-          btn.classList.add("selected");
-          clearResults();
+  // fade out image
+  requestAnimationFrame(()=>{
+    methImage.style.opacity='0';
+    setTimeout(()=>{
+      methImage.style.display='none';
+      methVideo.style.display='block';
+      const p=methVideo.play();
+      if(p && typeof p.then==='function'){p.catch(()=>{});}
+    },350);
+  });
+}
 
-          if (choice === "meth") {
-            setFeedback("Bold choice. Let’s see what really happens in this reaction...", "error");
-            methVideoResult.classList.add("visible");
+optMeth.addEventListener('click',()=>{
+  clearSelections();
+  optMeth.classList.add('selected');
+  feedback.textContent="Bold choice. Let’s see what really happens in this reaction...";
+  crossfadeToVideo();
+});
 
-            if (methHeading) {
-              methHeading.classList.remove("not-meth-animate");
-              void methHeading.offsetWidth; // reflow to restart animation
-              methHeading.classList.add("not-meth-animate");
-            }
-
-            if (methVideo) {
-              methVideo.pause();
-              methVideo.currentTime = 0;
-              setTimeout(() => {
-                const playPromise = methVideo.play();
-                if (playPromise && typeof playPromise.then === "function") {
-                  playPromise.catch(() => {
-                    // autoplay might be blocked; ignore
-                  });
-                }
-              }, 1100); // wait for heading fade animation
-            }
-          } else {
-            setFeedback("Smart move. Never admit anything in a lab… or to the DEA.", "success");
-            methFunResult.classList.add("visible", "fun-pop");
-          }
-        });
-      });
-    });
-  </script>
+optCandy.addEventListener('click',()=>{
+  clearSelections();
+  optCandy.classList.add('selected');
+  feedback.textContent="Smart move. Never admit anything in a lab… or to the DEA.";
+  funResult.classList.add('visible','fun-pop');
+});
+</script>
 </body>
 </html>
