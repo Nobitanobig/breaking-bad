@@ -205,7 +205,6 @@
       opacity: 1;
     }
 
-    /* Staggered animation */
     .character-card:nth-child(1) { animation-delay: 0.15s; }
     .character-card:nth-child(2) { animation-delay: 0.25s; }
     .character-card:nth-child(3) { animation-delay: 0.35s; }
@@ -232,7 +231,7 @@
     }
     .element-weight { font-size: 0.7rem; }
 
-    /* Image */
+    /* Character image */
     .character-img-wrapper {
       position: relative;
       border-radius: 0.9rem;
@@ -243,7 +242,7 @@
     .character-img-wrapper img {
       display: block;
       width: 100%;
-      height: auto;       /* show full image */
+      height: auto;
       object-fit: contain;
       filter: contrast(1.05) saturate(1.1);
       transition: transform var(--bb-transition-med), filter var(--bb-transition-med);
@@ -368,19 +367,23 @@
 
     .meth-image-wrapper {
       flex: 1 1 260px;
-      max-width: 380px;
-      border-radius: 1.5rem;
+      max-width: 480px;
+      aspect-ratio: 861 / 474;
+      border-radius: 1.2rem;
       overflow: hidden;
-      border: 1px solid rgba(111, 191, 58, 0.5);
+      border: 2px solid rgba(111, 191, 58, 0.6);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
-      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.2), transparent);
+      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.2), transparent),
+                  #050806;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .meth-image-wrapper img {
-      display: block;
       width: 100%;
-      height: auto;
+      height: 100%;
       object-fit: contain;
       transform-origin: center;
       transition: transform 0.4s ease-out, filter 0.4s ease-out, opacity 0.4s;
@@ -396,70 +399,68 @@
       max-width: 380px;
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      gap: 0.9rem;
     }
 
     .meth-question {
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--bb-text-main);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
-    .meth-input-row {
+    .meth-options {
       display: flex;
-      gap: 0.5rem;
-      margin-top: 0.3rem;
+      flex-direction: column;
+      gap: 0.6rem;
     }
 
-    .meth-input-row input {
-      flex: 1;
-      padding: 0.5rem 0.7rem;
+    .meth-option-btn {
       border-radius: 999px;
       border: 1px solid rgba(154, 223, 107, 0.7);
-      background: rgba(5, 12, 7, 0.9);
-      color: var(--bb-text-main);
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out, background 0.2s ease-out;
-    }
-
-    .meth-input-row input:focus {
-      border-color: var(--bb-green-soft);
-      box-shadow: 0 0 14px rgba(154, 223, 107, 0.5);
-      background: rgba(10, 20, 13, 0.95);
-    }
-
-    .meth-submit-btn {
-      border-radius: 999px;
-      border: 1px solid var(--bb-green-soft);
       background:
-        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.35), transparent 55%),
+        radial-gradient(circle at 10% 0, rgba(182, 255, 146, 0.3), transparent 60%),
         linear-gradient(135deg, rgba(13, 37, 16, 0.95), rgba(12, 29, 14, 0.98));
-      padding: 0.45rem 0.9rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.85rem;
+      text-align: left;
       cursor: pointer;
       color: var(--bb-text-main);
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.3rem;
-      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+      justify-content: space-between;
+      gap: 0.6rem;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out,
+        background 0.2s ease-out, opacity 0.2s ease-out;
     }
 
-    .meth-submit-btn::before {
-      content: "🔬";
-      font-size: 0.85rem;
+    .meth-option-btn span.label {
+      flex: 1;
     }
 
-    .meth-submit-btn:hover {
-      transform: translateY(-1px) scale(1.03);
+    .meth-option-btn span.tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--bb-green-soft);
+      opacity: 0.9;
+    }
+
+    .meth-option-btn:hover {
+      transform: translateY(-1px) scale(1.02);
       box-shadow: var(--bb-shadow-soft);
       border-color: var(--bb-green);
     }
 
-    .meth-submit-btn:active {
-      transform: translateY(1px) scale(0.97);
+    .meth-option-btn:active {
+      transform: translateY(1px) scale(0.98);
       box-shadow: none;
+    }
+
+    .meth-option-btn.selected {
+      border-color: var(--bb-accent);
+      box-shadow: 0 0 18px rgba(245, 211, 107, 0.5);
     }
 
     .meth-feedback {
@@ -483,28 +484,65 @@
       color: var(--bb-danger);
     }
 
-    /* Explosion / wrong answer animations */
-    .meth-image-wrapper.explode img {
-      animation: methExplode 1s ease-out forwards;
+    .meth-result {
+      margin-top: 0.6rem;
+      padding: 0.8rem 0.9rem;
+      border-radius: 1rem;
+      border: 1px dashed rgba(154, 223, 107, 0.5);
+      background: radial-gradient(circle at top, rgba(111, 191, 58, 0.12), transparent 65%),
+                  rgba(5, 12, 7, 0.96);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: none;
+      animation: fadeInUp 0.4s ease-out both;
     }
 
-    @keyframes methExplode {
-      0% { transform: scale(1); opacity: 1; filter: brightness(1); }
-      40% { transform: scale(1.15); filter: brightness(1.4); }
-      70% { transform: scale(1.3); filter: brightness(2); }
-      100% { transform: scale(1.6); opacity: 0; filter: blur(4px) brightness(0.2); }
+    .meth-result.visible {
+      display: block;
     }
 
-    .meth-image-wrapper.shake img {
-      animation: methShake 0.5s ease-in-out;
+    .meth-result-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--bb-accent);
     }
 
-    @keyframes methShake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
+    /* "This Is Not Meth!" heading animation */
+    .meth-result-title.not-meth-animate {
+      animation: notMethFade 1.1s ease-out forwards;
+    }
+
+    @keyframes notMethFade {
+      0%   { opacity: 0; transform: translateY(10px) scale(0.95); }
+      40%  { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+    }
+
+    .meth-result--video video {
+      width: 100%;
+      margin-top: 0.4rem;
+      border-radius: 0.8rem;
+      border: 1px solid rgba(245, 211, 107, 0.6);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.8);
+      background: #000;
+    }
+
+    .meth-result-note {
+      font-size: 0.75rem;
+      color: var(--bb-text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Fun animation for option 2 result */
+    .meth-result.fun-pop {
+      animation: funPop 0.4s ease-out both;
+    }
+
+    @keyframes funPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     /* Footer */
@@ -559,13 +597,11 @@
     /* Responsive tweaks */
     @media (max-width: 600px) {
       .bb-header { padding-top: 2rem; }
-
       .bb-title { transform: scale(0.9); }
-
       .bb-main { padding: 1rem; }
 
       .character-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 per row on mobile */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
       }
 
@@ -748,29 +784,54 @@
       <section class="meth-section">
         <h2 class="meth-title">Final Reaction Test</h2>
         <p class="meth-subtitle">
-          One last experiment. Look at the crystal below and tell the lab: <strong>what is this substance called?</strong>
+          One last experiment. Look at the crystal below and answer the lab’s question.
         </p>
 
         <div class="meth-container">
           <div class="meth-image-wrapper" id="meth-image-wrapper">
-            <!-- Replace with your real meth image -->
             <img src="images/meth-crystal.png" alt="Mysterious blue crystal" id="meth-image" />
           </div>
 
           <div class="meth-quiz">
-            <p class="meth-question">
-              Type your answer below. Spell it right if you know your chemistry.
-            </p>
-            <div class="meth-input-row">
-              <input
-                type="text"
-                id="meth-answer"
-                placeholder="Hint: Heisenberg's most famous product..."
-                autocomplete="off"
-              />
-              <button class="meth-submit-btn" id="meth-submit">Submit</button>
+            <p class="meth-question">What is this?</p>
+
+            <div class="meth-options">
+              <button class="meth-option-btn" data-choice="meth">
+                <span class="label">Meth</span>
+                <span class="tag">Option 1</span>
+              </button>
+
+              <button class="meth-option-btn" data-choice="candy">
+                <span class="label">Limited edition blue rock candy 😋</span>
+                <span class="tag">Option 2</span>
+              </button>
             </div>
+
             <p class="meth-feedback" id="meth-feedback"></p>
+
+            <!-- Result if user picks Meth -->
+            <div class="meth-result meth-result--video" id="meth-video-result">
+              <h3 class="meth-result-title" id="meth-video-heading">This Is Not Meth!</h3>
+              <p>
+                You really thought it was that simple? Heisenberg always has one more surprise reaction up his sleeve.
+              </p>
+              <!-- You will add this video file later -->
+              <video id="meth-video" src="video/not-meth.mp4" controls></video>
+              <p class="meth-result-note">
+                The video should auto-play after the reveal. If your browser blocks it, just hit play.
+              </p>
+            </div>
+
+            <!-- Result if user picks option 2 -->
+            <div class="meth-result" id="meth-fun-result">
+              <h3 class="meth-result-title">You Might Actually Live Through This Lab Session.</h3>
+              <p>
+                Nope! This belongs in Heisenberg’s cook. You can retry, if you dare.
+              </p>
+              <p class="meth-result-note">
+                Smart answer, though. Never admit anything in a lab… or to the DEA.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -783,11 +844,11 @@
 
   <!-- INLINE JS -->
   <script>
+    /* Shared audio handler (for character buttons) */
     let currentAudio = null;
     let currentButton = null;
 
     function playAudio(src, button = null) {
-      // If clicking same button while playing: stop
       if (currentButton === button && currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -797,7 +858,6 @@
         return;
       }
 
-      // Stop any previous audio
       if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -827,7 +887,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       /* Character audio buttons */
       const buttons = document.querySelectorAll(".audio-btn");
-
       buttons.forEach((btn) => {
         btn.addEventListener("click", () => {
           const audioSrc = btn.getAttribute("data-audio");
@@ -837,19 +896,21 @@
       });
 
       /* Meth quiz logic */
-      const methInput = document.getElementById("meth-answer");
-      const methSubmit = document.getElementById("meth-submit");
+      const optionButtons = document.querySelectorAll(".meth-option-btn");
       const methFeedback = document.getElementById("meth-feedback");
-      const methWrapper = document.getElementById("meth-image-wrapper");
+      const methVideoResult = document.getElementById("meth-video-result");
+      const methFunResult = document.getElementById("meth-fun-result");
+      const methVideo = document.getElementById("meth-video");
+      const methHeading = document.getElementById("meth-video-heading");
 
-      const correctAnswers = [
-        "meth",
-        "methamphetamine",
-        "crystal meth",
-        "blue meth",
-        "methamphetim",  // funny misspelling mentioned by you
-        "methampathim"   // handle that exact spelling too
-      ];
+      function clearResults() {
+        methVideoResult.classList.remove("visible");
+        methFunResult.classList.remove("visible", "fun-pop");
+      }
+
+      function clearSelectedButtons() {
+        optionButtons.forEach((b) => b.classList.remove("selected"));
+      }
 
       function setFeedback(message, type) {
         methFeedback.textContent = message;
@@ -858,54 +919,40 @@
         if (type) methFeedback.classList.add(type);
       }
 
-      function handleMethSubmit() {
-        const raw = (methInput.value || "").trim().toLowerCase();
-        if (!raw) {
-          setFeedback("At least guess something, rookie.", "error");
-          return;
-        }
+      optionButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const choice = btn.getAttribute("data-choice");
+          clearSelectedButtons();
+          btn.classList.add("selected");
+          clearResults();
 
-        const isCorrect = correctAnswers.some((ans) => raw.includes(ans));
+          if (choice === "meth") {
+            setFeedback("Bold choice. Let’s see what really happens in this reaction...", "error");
+            methVideoResult.classList.add("visible");
 
-        // Clear previous animations
-        methWrapper.classList.remove("explode", "shake");
+            if (methHeading) {
+              methHeading.classList.remove("not-meth-animate");
+              void methHeading.offsetWidth; // reflow to restart animation
+              methHeading.classList.add("not-meth-animate");
+            }
 
-        if (isCorrect) {
-          // Explosion animation + success audio
-          methWrapper.classList.add("explode");
-          setFeedback("Correct! Boom! You clearly know your blue stuff.", "success");
-          playAudio("audio/meth-explode.mp3", null);
-
-          // Reset image after explosion so user can play again
-          setTimeout(() => {
-            methWrapper.classList.remove("explode");
-          }, 1100);
-        } else {
-          // Fun wrong reaction: shake + playful message + error audio
-          methWrapper.classList.add("shake");
-          playAudio("audio/wrong-answer.mp3", null);
-
-          const funMessages = [
-            "Wrong compound. Are you sure you passed chemistry?",
-            "Not quite. Maybe call Saul before answering again.",
-            "Close, but no crystal-clear purity yet.",
-            "That guess was... about 96% impure."
-          ];
-          const msg = funMessages[Math.floor(Math.random() * funMessages.length)];
-          setFeedback(msg, "error");
-
-          setTimeout(() => {
-            methWrapper.classList.remove("shake");
-          }, 600);
-        }
-      }
-
-      methSubmit.addEventListener("click", handleMethSubmit);
-      methInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          handleMethSubmit();
-        }
+            if (methVideo) {
+              methVideo.pause();
+              methVideo.currentTime = 0;
+              setTimeout(() => {
+                const playPromise = methVideo.play();
+                if (playPromise && typeof playPromise.then === "function") {
+                  playPromise.catch(() => {
+                    // autoplay might be blocked; ignore
+                  });
+                }
+              }, 1100); // wait for heading fade animation
+            }
+          } else {
+            setFeedback("Smart move. Never admit anything in a lab… or to the DEA.", "success");
+            methFunResult.classList.add("visible", "fun-pop");
+          }
+        });
       });
     });
   </script>
